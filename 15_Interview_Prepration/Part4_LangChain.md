@@ -21,7 +21,43 @@
     - Runnable Lambda
     - Runnable Map
     - Runnable PassThrough
-    
+5) Document Loader
+    - TextLoader
+    - PyPDFLoader
+    - DirectoryLoader
+    - WebBasedLoader
+    - CSVLoader
+    - Load VS LazyLoad()
+
+6) TextSPlitting
+    - Length-Based Splitting
+    - Text-Structure Based Splitters
+    - Document Structure Based Splitters
+    - Semantic Meaning Based SPlitters
+
+7) Chunking
+
+8) Embedding
+    - OpenAIEmbedding
+
+9) Vector Store
+
+10) Vector Database
+
+11) Retriever
+    - Wikipedia Retriever
+    - Vector Store Retriever
+    - Maximum Margin Relevance (MMR) Retriever
+    - Multi - Query Retriever
+    - Contextual Compression Retriever
+
+12) Augmentation
+    - Prompt Templating
+    - Answer grounding
+    - Context Window optimization
+
+
+
 
 
 
@@ -1621,7 +1657,182 @@ Together, they give you flexibility depending on your **data type** and **retrie
 
 ---
 
-## 🔹 What Are Embeddings?
+# Chunking
+---
+## 🔹 What is Chunking And Overlap?
+- **Chunking** = breaking large documents into smaller, manageable pieces (chunks).  
+- Each chunk is then embedded into a vector, stored in a vector store, and retrieved later.  
+- Without chunking, embeddings would be created for entire documents, which:
+  - Lose fine‑grained context.
+  - Exceed LLM token limits.
+  - Make retrieval less precise.
+
+---
+
+## 🔹 Why Chunking Matters
+1. **Efficiency** → Smaller chunks = faster similarity search.  
+2. **Accuracy** → Retrieval is more fine‑grained (you get the exact passage, not the whole doc).  
+3. **Context Control** → Prevents exceeding LLM’s context window.  
+4. **Semantic Precision** → Embeddings capture meaning at the right granularity.
+
+---
+
+## 🔹 Chunking Strategies
+Chunking is closely tied to **text splitters**. The main approaches are:
+
+1. **Length‑Based Chunking**  
+   - Split by fixed size (characters/tokens).  
+   - Example: 500 characters per chunk.  
+   ```python
+   from langchain.text_splitter import CharacterTextSplitter
+
+   splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+   chunks = splitter.split_text("Long IPL article...")
+   ```
+
+2. **Text Structure‑Based Chunking**  
+   - Split by natural boundaries (paragraphs, sentences).  
+   - Example: RecursiveCharacterTextSplitter with separators.  
+
+3. **Document Structure‑Based Chunking**  
+   - Respect formatting (Markdown, HTML, code blocks).  
+   - Example: MarkdownHeaderTextSplitter.  
+
+4. **Semantic Chunking**  
+   - Use embeddings to split by meaning.  
+   - Example: SemanticChunker ensures chunks align with semantic boundaries.  
+   ```python
+   from langchain_experimental.text_splitter import SemanticChunker
+   from langchain_openai import OpenAIEmbeddings
+
+   embeddings = OpenAIEmbeddings()
+   splitter = SemanticChunker(embeddings)
+   chunks = splitter.split_text("Detailed IPL analysis...")
+   ```
+
+---
+
+## 🔹 Chunk Size & Overlap
+- **Chunk Size:** How big each chunk is (e.g., 200–1000 tokens).  
+- **Chunk Overlap:** Overlap between chunks to preserve context across boundaries.  
+  - Example: If chunk size = 500, overlap = 50 → each chunk shares 50 tokens with the next.  
+  - Prevents cutting off mid‑sentence or losing continuity.
+
+---
+
+## 📊 Example Workflow (IPL Dataset)
+```python
+from langchain.text_splitter import CharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
+
+# 1. Split IPL docs into chunks
+splitter = CharacterTextSplitter(chunk_size=300, chunk_overlap=50)
+chunks = splitter.split_documents(docs)
+
+# 2. Embed chunks
+embeddings = OpenAIEmbeddings()
+
+# 3. Store in Chroma
+db = Chroma.from_documents(chunks, embeddings, persist_directory="./ipl_db")
+
+# 4. Query
+retriever = db.as_retriever()
+results = retriever.get_relevant_documents("Who are IPL captains?")
+```
+
+---
+
+## 🎯 Key Insight
+- **Chunking = the foundation of retrieval.**  
+- It ensures embeddings are meaningful, retrieval is precise, and LLM answers are grounded.  
+- The choice of chunking strategy depends on your data type:
+  - Raw text → length‑based.  
+  - Articles → structure‑based.  
+  - Technical docs → document‑based.  
+  - Complex semantic content → semantic chunking.
+
+---
+
+## How do you evaluate the Chunking
+---
+
+## 🔹 1. Quantitative Evaluation
+These are measurable metrics you can track:
+
+- **Chunk Size Distribution**  
+  - Check if chunks are within the desired token/character range.  
+  - Too small → embeddings lose context.  
+  - Too large → exceed LLM context window.  
+  - Ideal: 200–1000 tokens depending on use case.
+
+- **Overlap Effectiveness**  
+  - Evaluate if overlap preserves continuity across chunks.  
+  - Example: If a sentence is cut mid‑way, overlap should ensure context isn’t lost.
+
+- **Retrieval Precision/Recall**  
+  - Precision: % of retrieved chunks that are actually relevant.  
+  - Recall: % of relevant chunks that were retrieved.  
+  - Compare different chunking strategies (length vs semantic) using these metrics.
+
+---
+
+## 🔹 2. Qualitative Evaluation
+Human‑driven or LLM‑assisted checks:
+
+- **Context Preservation**  
+  - Does each chunk contain a complete thought?  
+  - Avoid cutting mid‑sentence or mid‑paragraph.
+
+- **Semantic Coherence**  
+  - Are chunks semantically meaningful?  
+  - Semantic chunking should keep related ideas together.
+
+- **Answer Grounding**  
+  - Run queries and check if the retrieved chunks provide enough context for the LLM to answer correctly.  
+  - If answers are vague or hallucinated, chunking may be too coarse or too fine.
+
+---
+
+## 🔹 3. Practical Testing Workflow
+1. **Baseline:** Start with length‑based chunking (e.g., 500 tokens, 50 overlap).  
+2. **Experiment:** Try structure‑based and semantic chunking.  
+3. **Query Set:** Prepare a set of representative queries.  
+4. **Evaluate:** For each query, measure:
+   - Retrieval relevance (precision/recall).  
+   - LLM answer accuracy.  
+   - Token usage (cost efficiency).  
+5. **Compare:** Choose the chunking strategy that balances accuracy, efficiency, and context preservation.
+
+---
+
+## 📊 Example Evaluation (IPL Dataset)
+Suppose you chunk IPL player bios:
+
+- **Length‑based (300 tokens):**  
+  - Query: “Who is a bowler?”  
+  - Retrieved: Bumrah chunk → ✅ relevant.  
+  - Kohli chunk → ❌ irrelevant.  
+  - Precision = 50%, Recall = 100%.
+
+- **Semantic chunking:**  
+  - Query: “Who is a bowler?”  
+  - Retrieved: Bumrah chunk only → ✅ relevant.  
+  - Precision = 100%, Recall = 100%.  
+  - Better than length‑based.
+
+---
+
+## 🎯 Key Insight
+- **Evaluation = balance between retrieval quality and efficiency.**  
+- Good chunking ensures:
+  - Chunks are neither too small nor too large.  
+  - Context is preserved.  
+  - Retrieval is precise and diverse.  
+- The best way is to **experiment with multiple strategies** and measure retrieval + answer quality.
+
+---
+# 🔹 What Are Embeddings?
 - An **embedding** is a numerical vector representation of text.  
 - It captures **semantic meaning** — so phrases with similar meaning end up close together in vector space.  
 - Example:  
@@ -2056,5 +2267,361 @@ results = retriever.get_relevant_documents("Who are IPL captains?")
 - **Contextual Compression** → trims down noisy results.  
 
 Together, these retrievers give you flexibility to tailor retrieval depending on your **data type, query style, and context needs**.
+
+# **Full Retrieval Pipeline** (**Pre‑Retrieval, During Retrieval, Post‑Retrieval**). 
+---
+
+## 🔹 Retrieval Pipeline Stages
+
+### 1. **Pre‑Retrieval**
+This stage improves the **query itself** before hitting the vector store.
+
+- **Query Rewriting using LLM**  
+  - The LLM reformulates the user’s query to make it clearer or more effective.  
+  - Example: User asks *“Who’s the skipper in IPL?”* → rewritten as *“Who are the captains in IPL?”*.
+
+- **Multi‑Query Generation**  
+  - LLM generates multiple variations of the query.  
+  - Ensures synonyms/paraphrases are covered.  
+  - Example: “IPL captains”, “team leaders in IPL”, “skippers in IPL”.
+
+- **Domain‑Aware Routing**  
+  - If you have multiple knowledge bases (finance, healthcare, sports), the system routes the query to the right domain.  
+  - Example: “What is EBITDA?” → goes to finance DB, not sports DB.
+
+---
+
+### 2. **During Retrieval**
+This stage controls *how documents are selected* from the vector store.
+
+- **MMR (Maximum Marginal Relevance)**  
+  - Balances relevance + diversity.  
+  - Prevents redundant chunks.  
+  - Example: Query “IPL captains” → returns Dhoni, Rohit, Kohli (not just multiple docs about Rohit).
+
+- **Hybrid Retrieval**  
+  - Combines **dense (embeddings)** + **sparse (keywords)** search.  
+  - Example: Use FAISS (semantic) + BM25 (keyword) together.  
+  - Ensures both semantic meaning and exact keyword matches are captured.
+
+- **Reranking**  
+  - Retrieved docs are re‑scored (using LLM or another model).  
+  - Ensures the most relevant doc is ranked highest.  
+  - Example: Query “Who is a bowler?” → Bumrah bio ranked above Kohli bio.
+
+---
+
+### 3. **Post‑Retrieval**
+This stage refines the retrieved docs before sending them to the LLM.
+
+- **Contextual Compression**  
+  - Compresses or filters docs to keep only the most relevant sentences.  
+  - Example: Bumrah’s bio → only keep “fast bowler, yorkers, death overs” instead of the whole paragraph.  
+  - Reduces token usage and noise.
+
+---
+
+## 📊 End‑to‑End Flow
+
+1. **User Query** → “Who is a bowler in IPL?”  
+2. **Pre‑Retrieval** → Query rewritten, synonyms generated.  
+3. **Retriever (During Retrieval)** → Vector store search with MMR + hybrid + reranking.  
+4. **Post‑Retrieval** → Contextual compression trims docs.  
+5. **Chain (Stuff/Map‑Reduce/Refine)** → Decides how to feed docs into LLM.  
+6. **LLM Answer** → “Jasprit Bumrah is a bowler in IPL.”
+
+---
+
+## 🎯 Key Insight
+- **Pre‑Retrieval** = make the query smarter.  
+- **During Retrieval** = make the selection smarter.  
+- **Post‑Retrieval** = make the context cleaner.  
+- Together, they ensure the LLM gets **precise, diverse, and concise context**, which leads to accurate answers.
+
+---
+
+## 🔹 What is a Chain?
+- A **Chain** is a workflow that connects multiple components (LLMs, retrievers, prompts, tools).  
+- Instead of calling an LLM with a single prompt, a chain lets you **sequence multiple steps**.  
+- Think of it as a **pipeline**: Input → Processing → Output.
+
+---
+
+## 🧩 Major Chain Types in LangChain
+
+### 1. **Stuff Chain**
+- **How it works:**  
+  Takes all retrieved documents, “stuffs” them into the prompt, and sends to the LLM.  
+- **Best for:** Small number of short docs.  
+- **Example:**
+```python
+from langchain.chains import RetrievalQA
+from langchain.chat_models import ChatOpenAI
+
+qa_chain = RetrievalQA.from_chain_type(
+    llm=ChatOpenAI(),
+    retriever=vector_store.as_retriever(),
+    chain_type="stuff"
+)
+
+response = qa_chain.run("Who is the most successful IPL captain?")
+print(response)
+```
+
+---
+
+### 2. **Map‑Reduce Chain**
+- **How it works:**  
+  - **Map step:** Each doc is processed individually (summarized/answered).  
+  - **Reduce step:** Combine results into a final answer.  
+- **Best for:** Large corpora where stuffing all docs would exceed token limits.  
+- **Example:**
+```python
+qa_chain = RetrievalQA.from_chain_type(
+    llm=ChatOpenAI(),
+    retriever=vector_store.as_retriever(),
+    chain_type="map_reduce"
+)
+```
+
+---
+
+### 3. **Refine Chain**
+- **How it works:**  
+  - Start with one doc → generate initial answer.  
+  - Iteratively refine the answer with each additional doc.  
+- **Best for:** When each doc adds incremental context.  
+- **Example:**
+```python
+qa_chain = RetrievalQA.from_chain_type(
+    llm=ChatOpenAI(),
+    retriever=vector_store.as_retriever(),
+    chain_type="refine"
+)
+```
+
+---
+
+### 4. **Map‑Rerank Chain**
+- **How it works:**  
+  - Each doc is scored individually.  
+  - The best scoring doc is chosen for the final answer.  
+- **Best for:** Factoid questions where precision matters.  
+- **Example:**
+```python
+qa_chain = RetrievalQA.from_chain_type(
+    llm=ChatOpenAI(),
+    retriever=vector_store.as_retriever(),
+    chain_type="map_rerank"
+)
+```
+
+---
+
+## 📊 Comparison Table
+
+| Chain Type     | How It Works | Best Use Case |
+|----------------|--------------|---------------|
+| **Stuff**      | All docs stuffed into prompt | Few short docs |
+| **Map‑Reduce** | Summarize each → combine | Large corpora |
+| **Refine**     | Iteratively improve answer | Incremental context |
+| **Map‑Rerank** | Score docs → pick best | Factoid precision |
+
+---
+
+## 🔹 Example Workflow (IPL Dataset)
+Suppose you ask: *“Who is a bowler in IPL?”*
+
+- **Stuff Chain:**  
+  All player bios stuffed → LLM answers “Jasprit Bumrah is a bowler.”  
+- **Map‑Reduce Chain:**  
+  Each bio processed → Bumrah identified → combined into final answer.  
+- **Refine Chain:**  
+  Start with Kohli bio (no bowler info) → refine with Bumrah bio → final answer.  
+- **Map‑Rerank Chain:**  
+  Each bio scored → Bumrah bio ranked highest → answer returned.
+
+---
+
+## 🎯 Key Insight
+- **Chains = orchestration.**  
+- They decide *how retrieved chunks are fed into the LLM*.  
+- Choice depends on:
+  - **Data size** (few docs → Stuff, many docs → Map‑Reduce).  
+  - **Answer type** (factoid → Map‑Rerank, narrative → Refine).  
+---
+
+## 🔹 Augmentation in RAG
+- **Definition:** Augmentation is the process of injecting retrieved documents (chunks) into the LLM prompt so the model can generate answers based on external knowledge.  
+- **Goal:** Prevent hallucinations, maximize relevance, and fit within the LLM’s token limits.
+
+---
+
+### 1. **Prompt Templating**
+- **What it is:** A structured way of combining the query + retrieved docs into a prompt.  
+- **Why it matters:** Keeps prompts consistent, reusable, and optimized for different tasks (Q&A, summarization, reasoning).  
+- **Example Template (Q&A):**
+```text
+You are an expert assistant. Use the context below to answer the question.
+
+Context:
+{retrieved_docs}
+
+Question:
+{user_query}
+
+Answer concisely and factually:
+```
+👉 This ensures the LLM always sees context first, then the question.
+
+---
+
+### 2. **Answer Grounding**
+- **What it is:** Forcing the LLM to base its answer strictly on retrieved docs.  
+- **Why it matters:** Prevents hallucinations and ensures factual accuracy.  
+- **Example Template:**
+```text
+Answer the question strictly using the provided context.
+If the context does not contain the answer, say "I don’t know."
+
+Context:
+{retrieved_docs}
+
+Question:
+{user_query}
+```
+👉 This makes the LLM admit when the answer isn’t in the data, instead of guessing.
+
+---
+
+### 3. **Context Window Optimization**
+- **What it is:** Managing the limited token window of the LLM (e.g., 4k, 8k, 32k tokens).  
+- **Strategies:**
+  - **Top‑k filtering:** Only pass the most relevant chunks.  
+  - **Summarization:** Compress long docs before injection.  
+  - **Map‑Reduce chains:** Process docs individually, then combine summaries.  
+  - **Contextual Compression:** Use an LLM or embedding filter to trim irrelevant sentences.  
+- **Example (Map‑Reduce Chain):**
+```python
+qa_chain = RetrievalQA.from_chain_type(
+    llm=ChatOpenAI(),
+    retriever=vector_store.as_retriever(),
+    chain_type="map_reduce"
+)
+```
+👉 Ensures large corpora don’t overflow the context window.
+
+---
+
+## 📊 How These Fit in RAG
+1. **Retrieval** → Get relevant chunks from vector DB.  
+2. **Augmentation** → Inject chunks into prompt using templates.  
+   - Prompt Templating → structure.  
+   - Answer Grounding → accuracy.  
+   - Context Window Optimization → efficiency.  
+3. **Generation** → LLM produces grounded answer.  
+4. **Evaluation** → Measure factuality, precision, recall.
+
+---
+
+## 🎯 Key Insight
+- **Prompt Templating** = structure.  
+- **Answer Grounding** = truthfulness.  
+- **Context Window Optimization** = efficiency.  
+Together, they make augmentation the **bridge between retrieval and generation** in RAG.
+
+---
+
+## 🧩 Step‑by‑Step Example
+
+### 1. Retrieval from Vector DB
+We start by fetching relevant chunks from Chroma:
+```python
+retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+docs = retriever.get_relevant_documents("Who is a bowler in IPL?")
+```
+👉 Suppose it returns chunks about Jasprit Bumrah, Bhuvneshwar Kumar, and Virat Kohli.
+
+---
+
+### 2. Augmentation with Prompt Template
+We inject retrieved docs into a **structured prompt**:
+```python
+from langchain.prompts import PromptTemplate
+
+template = """
+You are a cricket expert. Use the context below to answer the question.
+Answer strictly from the context. If the answer is not in the context, say "I don’t know."
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+"""
+
+prompt = PromptTemplate(
+    input_variables=["context", "question"],
+    template=template
+)
+```
+👉 This ensures **answer grounding** — the LLM cannot hallucinate outside the docs.
+
+---
+
+### 3. Context Window Optimization
+If docs are too long, we compress or summarize before injection:
+```python
+from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import LLMChainFilter
+from langchain.chat_models import ChatOpenAI
+
+compressor = LLMChainFilter.from_llm(ChatOpenAI())
+compression_retriever = ContextualCompressionRetriever(
+    base_retriever=retriever,
+    compressor=compressor
+)
+
+compressed_docs = compression_retriever.get_relevant_documents("Who is a bowler in IPL?")
+```
+👉 This trims irrelevant sentences, keeping only “Bumrah is a fast bowler” instead of his full biography.
+
+---
+
+### 4. Final Chain Execution
+We combine everything into a RetrievalQA chain:
+```python
+from langchain.chains import RetrievalQA
+from langchain.chat_models import ChatOpenAI
+
+qa_chain = RetrievalQA.from_chain_type(
+    llm=ChatOpenAI(),
+    retriever=compression_retriever,
+    chain_type="stuff",
+    chain_type_kwargs={"prompt": prompt}
+)
+
+response = qa_chain.run("Who is a bowler in IPL?")
+print(response)
+```
+
+---
+
+## 📊 Example Output
+```
+Jasprit Bumrah is a bowler in IPL, known for his yorkers and death‑over expertise.
+```
+
+---
+
+## 🎯 Key Takeaways
+- **Augmentation** → retrieved docs injected into the LLM prompt.  
+- **Prompt Templating** → structured format ensures clarity.  
+- **Answer Grounding** → prevents hallucinations, forces “I don’t know” if context missing.  
+- **Context Window Optimization** → compresses/summarizes docs to fit within token limits.  
+
+Together, these make the **Generation stage of RAG** robust, accurate, and efficient.
 
 ---
