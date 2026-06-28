@@ -1,3 +1,30 @@
+# Topic Covered
+1) Model
+    - Language Model
+    - Embedding Model
+2) Prompt
+    - Prompt Template
+    - Role Based Prompt
+    - Few-Shot Prompting
+    - Output Parser #TODO
+3) Chain
+    - LLMChain
+    - Sequential Chain
+    - Parallel Chain
+    - Conditional Chain
+    - RetreivalQA Chain
+    - ConversationalRetreival Chain
+4) Runnable
+    - Runnable Sequence
+    - Runnable Parallel
+    - Runnable Branch (Conditional)
+    - Runnable Lambda
+    - Runnable Map
+    - Runnable PassThrough
+    
+
+
+
 # Q) What are LangChain Componenets
 
 ## 🧩 Core LangChain Components
@@ -1168,5 +1195,866 @@ print(result["summary"])    # → "LangChain builds apps with LLMs."
 ## 🎯 Key Insight
 - **Runnables unify chains, agents, and pipelines.**  
 - You can compose them like Lego blocks: **Sequence for workflows, Parallel for multi‑outputs, Branch for routing, Lambda for custom logic, Map for batch processing, Passthrough for debugging.**
+
+---
+
+# 🔹 Components in a RAG Workflow
+
+### 1. **Document Loading**
+- Bring raw data into the system (PDFs, text files, SQL, APIs).
+- In LangChain: `PyPDFLoader`, `TextLoader`, `UnstructuredFileLoader`.
+
+---
+
+### 2. **Text Splitting**
+- Break large documents into smaller chunks for better retrieval.
+- In LangChain: `RecursiveCharacterTextSplitter`, `TokenTextSplitter`.
+
+---
+
+### 3. **Embedding**
+- Convert chunks into numerical vectors that capture semantic meaning.
+- In LangChain: `OpenAIEmbeddings`, `SentenceTransformersEmbeddings`.
+
+---
+
+### 4. **Vector Store (Knowledge Base)**
+- Store embeddings in a searchable database.
+- Examples: FAISS, Pinecone, Weaviate, Chroma.
+
+---
+
+### 5. **Retriever**
+- Query the vector store to fetch relevant chunks based on similarity.
+- In LangChain: `VectorStoreRetriever`, `BM25Retriever`, `MultiQueryRetriever`.
+
+---
+
+### 6. **LLM (Generator)**
+- Takes the retrieved context + user query and generates a grounded answer.
+- In LangChain: `OpenAI`, `ChatOpenAI`, `LLMChain`.
+
+---
+
+### 7. **Prompt / Chain**
+- Defines how the retrieved context is combined with the query.
+- In LangChain: `RetrievalQAChain`, `ConversationalRetrievalChain`.
+
+---
+
+### 8. **Orchestration**
+- Connects all components into a workflow.
+- Ensures: **Retrieve → Augment → Generate** happens smoothly.
+
+---
+
+## 📊 Quick Table
+
+| Stage              | LangChain Component | RAG Role |
+|--------------------|---------------------|----------|
+| Document Loading   | Document Loaders    | Ingest raw data |
+| Text Splitting     | Text Splitters      | Chunk docs |
+| Embedding          | Embedding Models    | Vectorize chunks |
+| Vector Store       | FAISS, Pinecone     | Knowledge base |
+| Retriever          | VectorStoreRetriever | Fetch context |
+| LLM (Generator)    | LLMChain / ChatModel | Generate answer |
+| Prompt / Chain     | RetrievalQAChain    | Combine context + query |
+| Orchestration      | Chains / Agents     | Manage workflow |
+
+---
+# 🔹 Document Loaders
+- They **read raw files or sources** (PDFs, text files, Word docs, HTML, databases, APIs).  
+- They convert that raw content into a **LangChain `Document` object** (basically text + metadata).  
+- This makes the data ready for downstream steps like **splitting, embedding, and storing in a vector database**.
+
+- Document loadersare components in LangChain used to load data from various sourcesinto a standardized format (usually as Documentobjects), which can then be used for chunking, embedding, retrieval, and generation.
+
+---
+
+## 🧩 Examples of Document Loaders
+- **File loaders**  
+  - `TextLoader` → plain `.txt` files  
+  - `PyPDFLoader` → PDFs  
+  - `UnstructuredFileLoader` → Word, PowerPoint, HTML, etc.  
+
+- **Web loaders**  
+  - `WebBaseLoader` → scrape content from a URL  
+  - `SitemapLoader` → crawl a site via its sitemap  
+
+- **Database/API loaders**  
+  - `SQLDatabaseLoader` → pull rows from a SQL database  
+  - `NotionDBLoader` → load pages from Notion  
+
+---
+
+## 🔹 Example Code
+```python
+from langchain.document_loaders import PyPDFLoader, TextLoader
+
+# Load a PDF
+pdf_loader = PyPDFLoader("sample.pdf")
+pdf_docs = pdf_loader.load()
+
+# Load a text file
+text_loader = TextLoader("notes.txt")
+text_docs = text_loader.load()
+
+print(pdf_docs[0].page_content[:200])  # first 200 chars of PDF
+print(text_docs[0].page_content[:200]) # first 200 chars of text file
+```
+
+---
+
+## 1. 📄 **TextLoader**
+- **Purpose:** Load plain `.txt` files into LangChain.  
+- **Use case:** Notes, logs, or any raw text file.
+
+```python
+from langchain.document_loaders import TextLoader
+
+# Load a text file
+loader = TextLoader("notes.txt")
+docs = loader.load()
+
+print(docs[0].page_content[:200])  # First 200 characters
+```
+
+---
+
+## 2. 📑 **PyPDFLoader**
+- **Purpose:** Load PDF files, page by page.  
+- **Use case:** Research papers, reports, eBooks.
+
+```python
+from langchain.document_loaders import PyPDFLoader
+
+# Load a PDF file
+loader = PyPDFLoader("sample.pdf")
+docs = loader.load()
+
+print(len(docs))  # Number of pages loaded
+print(docs[0].page_content[:200])  # First 200 chars of page 1
+```
+
+---
+
+## 3. 📂 **DirectoryLoader**
+- **Purpose:** Load all files from a directory.  
+- **Use case:** Bulk ingestion of documents.  
+- **Supports:** Filtering by file type.
+
+```python
+from langchain.document_loaders import DirectoryLoader
+from langchain.document_loaders import TextLoader
+
+# Load all .txt files in a folder
+loader = DirectoryLoader("data/", glob="**/*.txt", loader_cls=TextLoader)
+docs = loader.load()
+
+print(f"Loaded {len(docs)} documents")
+print(docs[0].page_content[:200])
+```
+
+Example 2 
+```python
+from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader
+
+loader = DirectoryLoader(
+    path=r'E:\\Udemy Course\\LangChain',
+    glob='*.pdf',
+    loader_cls=PyPDFLoader
+)
+
+#docs = loader.lazy_load()
+docs=loader.load()
+
+print(docs[0].page_content)
+print(docs[0].metadata)
+# for document in docs:
+#     print(document.metadata)
+
+```
+---
+
+## 4. 🌐 **WebBaseLoader**
+- **Purpose:** Load content directly from a webpage (scraping).  
+- **Use case:** Blogs, articles, documentation sites.
+
+```python
+from langchain.document_loaders import WebBaseLoader
+
+# Load content from a URL
+loader = WebBaseLoader("https://example.com/article")
+docs = loader.load()
+
+print(docs[0].page_content[:200])  # First 200 chars of the webpage
+```
+
+Hands-On Example
+
+```Python
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import PromptTemplate
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+model = ChatGoogleGenerativeAI(model='gemini-3.1-flash-lite')
+
+prompt = PromptTemplate(
+    template='Answer the following question \n {question} from the following text - \n {text}',
+    input_variables=['question','text']
+)
+
+parser = StrOutputParser()
+
+#you can give list of urls as well in WebBaseLoader
+url = 'https://www.flipkart.com/apple-macbook-air-m2-16-gb-256-gb-ssd-macos-sequoia-mc7x4hn-a/p/itmdc5308fa78421'
+loader = WebBaseLoader(url)
+
+docs = loader.load()
+
+
+chain = prompt | model | parser
+
+print(chain.invoke({'question':'What is the product that we are talking about?', 'text':docs[0].page_content}))
+
+```
+
+---
+
+## 5. 📊 **CSVLoader**
+- **Purpose:** Load CSV files into LangChain.  
+- **Use case:** Tabular data, datasets, structured logs.  
+- Each row becomes a `Document` with metadata.
+
+```python
+from langchain.document_loaders import CSVLoader
+
+# Load a CSV file
+loader = CSVLoader(file_path="data.csv")
+docs = loader.load()
+
+print(len(docs))  # Number of rows loaded
+print(docs[0].page_content)  # Content of first row
+print(docs[0].metadata)      # Metadata (column info)
+```
+
+---
+
+## 📊 Summary Table
+
+| Loader            | Input Type | Example Use Case |
+|-------------------|------------|------------------|
+| **TextLoader**    | `.txt` files | Notes, logs |
+| **PyPDFLoader**   | `.pdf` files | Research papers |
+| **DirectoryLoader** | Folder of files | Bulk ingestion |
+| **WebBaseLoader** | Web pages | Articles, blogs |
+| **CSVLoader**     | `.csv` files | Tabular datasets |
+
+---
+
+## 🎯 Key Insight
+- All loaders output **LangChain `Document` objects** → `{page_content, metadata}`.  
+- These documents then flow into **splitters → embeddings → vector stores → retrievers → LLM** in the RAG pipeline.  
+- Choosing the right loader depends on your **data source**.
+
+---
+
+## **`load()` vs `lazy_load()`**
+
+---
+
+## 🔹 `load()`
+- **What it does:** Reads the entire document (or dataset) immediately and returns a list of `Document` objects.  
+- **When to use:**  
+  - Small/medium files where loading everything at once is fine.  
+  - You want the whole content in memory right away.  
+- **Example:**
+```python
+from langchain.document_loaders import PyPDFLoader
+
+loader = PyPDFLoader("sample.pdf")
+
+# Loads all pages at once
+docs = loader.load()
+
+print(len(docs))  # number of pages
+print(docs[0].page_content[:200])  # first 200 chars of page 1
+```
+
+---
+
+## 🔹 `lazy_load()`
+- **What it does:** Returns a **generator** instead of a list.  
+  - Documents are loaded **one by one, on demand** (lazy evaluation).  
+- **When to use:**  
+  - Large files or directories where loading everything at once would be memory‑heavy.  
+  - You want to stream/process documents incrementally.  
+- **Example:**
+```python
+from langchain.document_loaders import DirectoryLoader, TextLoader
+
+loader = DirectoryLoader("data/", glob="**/*.txt", loader_cls=TextLoader)
+
+# Lazy load returns a generator
+docs_iter = loader.lazy_load()
+
+for doc in docs_iter:
+    print(doc.page_content[:100])  # process each doc as it loads
+```
+
+---
+
+## 📊 Comparison
+
+| Feature        | `load()`                  | `lazy_load()`                  |
+|----------------|---------------------------|--------------------------------|
+| **Return type** | List of `Document` objects | Generator (yields documents)   |
+| **Memory use** | Loads everything at once   | Loads one at a time (efficient)|
+| **Best for**   | Small/medium datasets      | Large datasets / streaming     |
+| **Processing** | Immediate                  | On‑demand / iterative          |
+
+---
+
+## 🎯 Key Insight
+- Use **`load()`** when you want everything upfront.  
+- Use **`lazy_load()`** when you want to **stream documents** or handle **large datasets efficiently**.  
+
+---
+
+# 🔹 Why Text Splitting?
+- LLMs have **context window limits** (e.g., 4k, 8k, 32k tokens).  
+- Large documents must be broken into smaller pieces.  
+- Splitting ensures **efficient retrieval** and **better embeddings**.
+
+---
+
+## 📊 Types of Text Splitters
+
+### 1. **Length‑Based Splitters**
+- **Logic:** Split text by character count or token length.  
+- **Use case:** Simple, fast, works for raw text.  
+- **Example:**
+```python
+from langchain.text_splitter import CharacterTextSplitter
+
+splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+chunks = splitter.split_text("Long text goes here...")
+print(chunks[:2])  # first two chunks
+```
+
+---
+
+### 2. **Text Structure‑Based Splitters**
+- **Logic:** Split by natural text boundaries (paragraphs, sentences, lines).  
+- **Use case:** Articles, essays, structured text.  
+- **Example:**
+```python
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,
+    chunk_overlap=50,
+    separators=["\n\n", "\n", ".", " "]
+)
+chunks = splitter.split_text("Document with paragraphs and sentences...")
+```
+
+---
+
+### 3. **Document Structure‑Based Splitters**
+- **Logic:** Respect document formats (Markdown, HTML, code, etc.).  
+- **Use case:** Technical docs, codebases, structured reports.  
+- **Example:**
+```python
+from langchain.text_splitter import MarkdownHeaderTextSplitter
+
+markdown_text = "# Title\n\n## Section\nContent here..."
+splitter = MarkdownHeaderTextSplitter(headers_to_split_on=[("#", "Header1"), ("##", "Header2")])
+docs = splitter.split_text(markdown_text)
+
+for d in docs:
+    print(d.page_content)
+```
+
+---
+
+### 4. **Semantic Meaning‑Based Splitters**
+- **Logic:** Split text based on semantic similarity, not just length.  
+- **Use case:** Preserve meaning in embeddings, avoid cutting mid‑thought.  
+- **Example:**
+```python
+from langchain_experimental.text_splitter import SemanticChunker
+from langchain_openai import OpenAIEmbeddings
+
+embeddings = OpenAIEmbeddings()
+splitter = SemanticChunker(embeddings, breakpoint_threshold_type="percentile")
+
+chunks = splitter.split_text("Long text with multiple ideas...")
+```
+
+---
+
+## 📊 Comparison Table
+
+| Splitter Type          | How it Splits | Best For |
+|------------------------|---------------|----------|
+| **Length‑Based**       | Fixed size chunks | Raw text, simple use cases |
+| **Text Structure‑Based** | Paragraphs, sentences | Articles, essays |
+| **Document Structure‑Based** | Respect format (Markdown, HTML, code) | Technical docs |
+| **Semantic Meaning‑Based** | Semantic similarity | Preserving context & meaning |
+
+---
+
+## 🎯 Key Insight
+- **Length‑based** = brute force, fast.  
+- **Structure‑based** = respects natural boundaries.  
+- **Document‑based** = respects formatting.  
+- **Semantic‑based** = preserves meaning.  
+
+Together, they give you flexibility depending on your **data type** and **retrieval needs**.
+
+---
+
+## 🔹 What Are Embeddings?
+- An **embedding** is a numerical vector representation of text.  
+- It captures **semantic meaning** — so phrases with similar meaning end up close together in vector space.  
+- Example:  
+  - “blood sugar level high”  
+  - “elevated glucose”  
+  → Their embeddings will be very similar.
+
+🔹 Embeddings
+Purpose: Convert each text chunk into a numerical vector that captures its semantic meaning.
+
+Why: Vectors allow similarity search — so when you ask a question, the system can find chunks that are semantically close to your query.
+
+In LangChain:
+- OpenAIEmbeddings
+- SentenceTransformersEmbeddings
+- HuggingFaceEmbeddings
+
+---
+
+## 🔹 Why Do We Need Embeddings?
+1. **Semantic Search**  
+   - Instead of keyword matching, embeddings allow you to find text chunks that *mean* the same thing.  
+   - This is why RAG can retrieve relevant context even if the wording is different.
+
+2. **Efficient Retrieval**  
+   - Embeddings are stored in a **vector database** (FAISS, Pinecone, Weaviate, Chroma).  
+   - Queries are converted into embeddings → nearest neighbor search finds the closest chunks.
+
+3. **Grounded Answers**  
+   - The LLM gets the most relevant chunks as context.  
+   - Reduces hallucinations and improves factual accuracy.
+
+---
+
+## 🔹 Example in LangChain
+```python
+from langchain_openai import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.document_loaders import TextLoader
+
+# 1. Load document
+loader = TextLoader("notes.txt")
+docs = loader.load()
+
+# 2. Split into chunks
+splitter = CharacterTextSplitter(chunk_size=200, chunk_overlap=20)
+chunks = splitter.split_documents(docs)
+
+# 3. Create embeddings
+embeddings = OpenAIEmbeddings()
+
+# 4. Store in vector DB
+db = FAISS.from_documents(chunks, embeddings)
+
+# 5. Query
+retriever = db.as_retriever()
+query = "What does LangChain do?"
+results = retriever.get_relevant_documents(query)
+
+print(results[0].page_content)
+```
+
+---
+
+## 📊 Workflow Recap
+1. **Document Loading** → bring in raw data.  
+2. **Text Splitting** → break into chunks.  
+3. **Embeddings** → convert chunks into vectors.  
+4. **Vector Store** → store vectors for retrieval.  
+5. **Retriever** → fetch relevant chunks.  
+6. **LLM (Generator)** → produce grounded answer.  
+
+---
+
+## 🔹 What is a Vector Store?
+A **vector store** is a specialized database that stores text embeddings (numerical vectors) and allows you to **search by similarity**.  
+Instead of keyword search, it finds chunks of text that are *semantically close* to your query.
+
+Think of it as the **library shelf** where all your document chunks (converted into vectors) are organized for fast retrieval.
+
+A vector storeis a system designed to store and retrieve data represented as numerical vectors.
+
+Key Features
+1. Storage–Ensures that vectors and their associated metadata are retained, whether in-memoryfor quick lookups or on-diskfor durability and large-scale use.
+2. Similarity Search-Helps retrieve the vectors most similar to a query vector.
+3. Indexing-Provide a data structure or method that enables fast similarity searcheson high-dimensional vectors (e.g., approximate nearest neighbor lookups).
+4. CRUD Operations-Manage the lifecycle of data—adding new vectors, reading them, updating existing entries, removing outdated vectors.
+
+Use-cases
+1. Semantic Search
+2. RAG
+3. Recommender Systems
+4. Image/Multimedia search
+
+---
+
+## 🧩 Key Features
+- **Storage** → Keeps embeddings + metadata.  
+- **Similarity Search** → Finds nearest neighbors to a query vector.  
+- **Metadata Filtering** → Search by tags, fields (e.g., author, date).  
+- **Scalability** → Some vector stores are lightweight (in‑memory), others are distributed and production‑ready.  
+
+---
+
+## 🔹 Types of Vector Stores
+
+### 1. **Lightweight (Vector Store Libraries)**
+- Examples: **FAISS**, **Annoy**, **HNSWlib**.  
+- Run locally, fast, but limited persistence.  
+- Best for prototyping.
+
+### 2. **Full‑Featured Vector Databases**
+- Examples: **Pinecone**, **Weaviate**, **Qdrant**, **Milvus**.  
+- Offer persistence, metadata filtering, distributed scaling, authentication.  
+- Best for production systems.
+
+---
+
+## 🔹 Example in LangChain (FAISS)
+```python
+from langchain_openai import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.document_loaders import TextLoader
+
+# 1. Load and split
+loader = TextLoader("notes.txt")
+docs = loader.load()
+splitter = CharacterTextSplitter(chunk_size=200, chunk_overlap=20)
+chunks = splitter.split_documents(docs)
+
+# 2. Create embeddings
+embeddings = OpenAIEmbeddings()
+
+# 3. Store in FAISS vector store
+db = FAISS.from_documents(chunks, embeddings)
+
+# 4. Query
+retriever = db.as_retriever()
+query = "What does LangChain do?"
+results = retriever.get_relevant_documents(query)
+
+print(results[0].page_content)
+```
+
+---
+
+## 📊 Quick Comparison
+
+| Feature              | Vector Store (FAISS, Annoy) | Vector Database (Pinecone, Weaviate) |
+|----------------------|-----------------------------|--------------------------------------|
+| Storage              | In‑memory                  | Persistent, distributed              |
+| Metadata Filtering   | ❌                          | ✅ Yes                               |
+| Scalability          | Limited                    | High (cloud‑scale)                   |
+| Best Use             | Prototyping, local dev     | Production workloads                 |
+
+---
+
+## 🎯 Key Insight
+- **Vector Store = where embeddings live.**  
+- It’s the backbone of RAG retrieval.  
+- Choice depends on whether you’re prototyping (FAISS) or building enterprise‑scale systems (Pinecone, Weaviate, Qdrant, Milvus).
+
+```python
+import os
+os.environ["OPENAI_API_KEY"] = "sk-proj-"
+
+!pip install langchain chromadb openai tiktoken pypdf langchain_openai langchain-community
+
+from langchain_openai import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
+
+from langchain.schema import Document
+
+# Create LangChain documents for IPL players
+
+doc1 = Document(
+        page_content="Virat Kohli is one of the most successful and consistent batsmen in IPL history. Known for his aggressive batting style and fitness, he has led the Royal Challengers Bangalore in multiple seasons.",
+        metadata={"team": "Royal Challengers Bangalore"}
+    )
+doc2 = Document(
+        page_content="Rohit Sharma is the most successful captain in IPL history, leading Mumbai Indians to five titles. He's known for his calm demeanor and ability to play big innings under pressure.",
+        metadata={"team": "Mumbai Indians"}
+    )
+doc3 = Document(
+        page_content="MS Dhoni, famously known as Captain Cool, has led Chennai Super Kings to multiple IPL titles. His finishing skills, wicketkeeping, and leadership are legendary.",
+        metadata={"team": "Chennai Super Kings"}
+    )
+doc4 = Document(
+        page_content="Jasprit Bumrah is considered one of the best fast bowlers in T20 cricket. Playing for Mumbai Indians, he is known for his yorkers and death-over expertise.",
+        metadata={"team": "Mumbai Indians"}
+    )
+doc5 = Document(
+        page_content="Ravindra Jadeja is a dynamic all-rounder who contributes with both bat and ball. Representing Chennai Super Kings, his quick fielding and match-winning performances make him a key player.",
+        metadata={"team": "Chennai Super Kings"}
+    )
+
+
+docs = [doc1, doc2, doc3, doc4, doc5]
+
+vector_store = Chroma(
+    embedding_function=OpenAIEmbeddings(),
+    persist_directory='my_chroma_db',
+    collection_name='sample'
+)
+
+# add documents
+vector_store.add_documents(docs)
+
+# view documents
+vector_store.get(include=['embeddings','documents', 'metadatas'])
+
+# search documents
+vector_store.similarity_search(
+    query='Who among these are a bowler?',
+    k=2
+)
+
+# search with similarity score
+vector_store.similarity_search_with_score(
+    query='Who among these are a bowler?',
+    k=2
+)
+
+# meta-data filtering
+vector_store.similarity_search_with_score(
+    query="",
+    filter={"team": "Chennai Super Kings"}
+)
+
+
+# update documents
+updated_doc1 = Document(
+    page_content="Virat Kohli, the former captain of Royal Challengers Bangalore (RCB), is renowned for his aggressive leadership and consistent batting performances. He holds the record for the most runs in IPL history, including multiple centuries in a single season. Despite RCB not winning an IPL title under his captaincy, Kohli's passion and fitness set a benchmark for the league. His ability to chase targets and anchor innings has made him one of the most dependable players in T20 cricket.",
+    metadata={"team": "Royal Challengers Bangalore"}
+)
+
+vector_store.update_document(document_id='09a39dc6-3ba6-4ea7-927e-fdda591da5e4', document=updated_doc1)
+
+
+# view documents
+vector_store.get(include=['embeddings','documents', 'metadatas'])
+
+
+# delete document
+vector_store.delete(ids=['09a39dc6-3ba6-4ea7-927e-fdda591da5e4'])
+
+```
+---
+# Distinction between **Vector Store** and **Vector Database** 
+---
+
+## 🔹 Vector Store
+- **Definition:** A lightweight library or service that stores embeddings (vectors) and performs similarity search.  
+- **Features:**
+  - Focused on **vector indexing + retrieval** only.  
+  - Usually **in‑memory** or simple disk persistence.  
+  - Lacks advanced database features (transactions, role‑based access, replication).  
+- **Best For:**  
+  - Prototyping  
+  - Small‑scale applications  
+  - Fast experimentation  
+- **Examples:**  
+  - **FAISS** (Facebook AI Similarity Search)  
+  - **Annoy**  
+  - **HNSWlib**
+
+---
+
+## 🔹 Vector Database
+- **Definition:** A full‑fledged database system designed to store and query vectors at scale.  
+- **Features:**
+  - **Distributed architecture** → horizontal scaling.  
+  - **Durability & persistence** → replication, backup/restore.  
+  - **Metadata handling** → schemas, filters, hybrid search (vector + keyword).  
+  - **Security** → authentication, authorization, role‑based access.  
+  - Often supports **ACID or near‑ACID guarantees**.  
+- **Best For:**  
+  - Production environments  
+  - Large datasets  
+  - Enterprise workloads needing scale, security, and reliability  
+- **Examples:**  
+  - **Milvus**  
+  - **Qdrant**  
+  - **Weaviate**  
+  - **Pinecone**
+
+---
+
+## 📊 Side‑by‑Side Comparison
+
+| Feature                | Vector Store ⚡ | Vector Database 🗄️ |
+|-------------------------|----------------|--------------------|
+| **Scope**              | Embedding storage + similarity search | Full database system for vectors |
+| **Persistence**        | Limited / manual | Built‑in durability & backup |
+| **Scalability**        | Local / single machine | Distributed, cloud‑scale |
+| **Metadata Filtering** | ❌ Not supported | ✅ Supported |
+| **Security**           | ❌ None | ✅ Authentication & RBAC |
+| **Best Use**           | Prototyping, small apps | Production, enterprise workloads |
+| **Examples**           | FAISS, Annoy, HNSWlib | Milvus, Qdrant, Weaviate, Pinecone |
+
+---
+
+## 🎯 Key Insight
+- A **Vector Database** is essentially a **Vector Store + extra database features** (scaling, durability, metadata filtering, security).  
+- Use **Vector Store** for quick experiments.  
+- Use **Vector Database** when you need **production‑grade reliability and scale**.
+
+---
+
+# 🔹 What is a Retriever?
+- A **retriever** is the component that takes your query, embeds it, and searches the vector store (or other knowledge sources) for the most relevant chunks.  
+- It’s the **“librarian”** of the RAG pipeline — finding the right passages for the LLM to use.
+
+---
+
+## 🧩 Types of Retrievers in LangChain
+
+Alright Ravi, let’s go deep into **retrievers in LangChain** — covering the ones you asked about: **Wikipedia Retriever, Vector Store Retriever, MMR Retriever, Multi‑Query Retriever, and Contextual Compression Retriever**. I’ll explain each in detail, show how they work, and give you practical examples.
+
+---
+
+## 🔹 1. Wikipedia Retriever
+- **What it does:**  
+  Pulls information directly from Wikipedia articles.  
+- **Use case:**  
+  When you want quick factual context from a public knowledge source without building your own vector store.  
+- **Example:**
+```python
+from langchain.retrievers import WikipediaRetriever
+
+retriever = WikipediaRetriever()
+results = retriever.get_relevant_documents("MS Dhoni IPL career")
+
+for r in results:
+    print(r.page_content[:200])
+```
+👉 This fetches relevant Wikipedia passages about Dhoni’s IPL career.
+
+---
+
+## 🔹 2. Vector Store Retriever
+- **What it does:**  
+  Uses embeddings + similarity search from your **vector store** (FAISS, Chroma, Pinecone, etc.).  
+- **Use case:**  
+  General semantic search over your custom corpus.  
+- **Example:**
+```python
+retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k":3})
+results = retriever.get_relevant_documents("Who are IPL captains?")
+```
+👉 This queries your IPL player embeddings stored in Chroma.
+
+---
+
+## 🔹 3. Maximum Marginal Relevance (MMR) Retriever
+- **What it does:**  
+  Balances **relevance** and **diversity**. Prevents redundant results by ensuring variety in retrieved chunks.  
+- **Use case:**  
+  When your dataset has overlapping content (e.g., multiple docs about Mumbai Indians).  
+- **Example:**
+```python
+retriever = vector_store.as_retriever(
+    search_type="mmr",
+    search_kwargs={"k":3, "fetch_k":10, "lambda_mult":0.5}
+)
+results = retriever.get_relevant_documents("Who are IPL captains?")
+```
+👉 Ensures you don’t just get Rohit Sharma + Bumrah repeatedly, but also Dhoni or Kohli.
+
+---
+
+## 🔹 4. Multi‑Query Retriever
+- **What it does:**  
+  Expands the query into multiple variations using an LLM. Improves recall by covering synonyms and paraphrases.  
+- **Use case:**  
+  When queries can be phrased differently (e.g., “skipper”, “captain”, “leader”).  
+- **Example:**
+```python
+from langchain.retrievers.multi_query import MultiQueryRetriever
+from langchain.chat_models import ChatOpenAI
+
+retriever = MultiQueryRetriever.from_llm(
+    retriever=vector_store.as_retriever(),
+    llm=ChatOpenAI()
+)
+results = retriever.get_relevant_documents("Who are IPL captains?")
+```
+👉 The LLM generates variations like “team leaders in IPL”, “skippers in IPL”, and retrieves across all.
+
+---
+
+## 🔹 5. Contextual Compression Retriever
+- **What it does:**  
+  Compresses or filters retrieved docs using another LLM or embedding filter.  
+- **Use case:**  
+  When retrieved chunks are too long or noisy, and you want only the most relevant sentences.  
+- **Example:**
+```python
+from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import LLMChainFilter
+from langchain.chat_models import ChatOpenAI
+
+base_retriever = vector_store.as_retriever()
+compressor = LLMChainFilter.from_llm(ChatOpenAI())
+retriever = ContextualCompressionRetriever(base_retriever=base_retriever, compressor=compressor)
+
+results = retriever.get_relevant_documents("Who are IPL captains?")
+```
+👉 This ensures only the most relevant parts of each doc are passed to the LLM.
+
+---
+
+## 📊 Comparison Table
+
+| Retriever Type              | How It Works | Best Use Case |
+|------------------------------|--------------|---------------|
+| **Wikipedia Retriever**      | Pulls from Wikipedia | Public knowledge, general facts |
+| **Vector Store Retriever**   | Embedding similarity | Custom corpus, semantic search |
+| **MMR Retriever**            | Relevance + diversity | Avoid redundancy in results |
+| **Multi‑Query Retriever**    | Query expansion via LLM | Cover synonyms/paraphrases |
+| **Contextual Compression**   | Filters/compresses docs | Reduce noise, keep only relevant context |
+
+---
+
+## 🎯 Key Insight
+- **Wikipedia Retriever** → external knowledge.  
+- **Vector Store Retriever** → your own knowledge base.  
+- **MMR** → balances relevance + diversity.  
+- **Multi‑Query** → expands queries for better recall.  
+- **Contextual Compression** → trims down noisy results.  
+
+Together, these retrievers give you flexibility to tailor retrieval depending on your **data type, query style, and context needs**.
 
 ---
