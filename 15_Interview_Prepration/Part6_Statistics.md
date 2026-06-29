@@ -1,3 +1,45 @@
+## Topic
+
+1) Mean, Media, Mode
+2) Variance
+3) Standard Deviation
+4) Variance VS Standard Deviation
+5) Covariance
+6) Correlation
+7) Conditional Probability
+8) Baye's Theorem
+9) Independent Event and Mutually Exclusive Events
+10) Law Of Total Probability
+11) Center Limit Theory
+12) Gaussian Distribution ( Normal Distribution )
+12) Hypothesis and Hypothesis Testing
+    - Null Hypothesis
+    - Alternative Hypothesis
+13) Null Hypothesis Vs Alternative Hypothesis
+14) Likelihood
+15) Probability Distribution
+    - Discrete Distribution **(PMF)**
+        - Bernouli Distribution
+        - Binomial Distribution
+        - Poission Distribution
+        - Discrete Uniform
+    - Continuous Distirbution **(PDF)**
+        - Normal
+        - Uniform
+        - Exponential
+16) PDF and PMF
+17) Hypothesis Testing
+    - Parametric Test
+        - Z Test (mean comparison (large sample, known σ).)
+        - T Test (mean comparison (small sample, unknown σ).)
+        - ANOVA (F‑Test) → comparing means across 3+ groups.
+        - Regression analysis → testing relationships between variables.
+    - Non-Parametric Test
+        - Chi‑Square Test → independence or goodness‑of‑fit for categorical data.
+        - Mann‑Whitney U Test → compare medians of two independent groups.
+        - Wilcoxon Signed‑Rank Test → compare paired samples.
+        - Kruskal‑Wallis Test → non‑parametric alternative to ANOVA.
+
 # **mean, median, and mode**
 
 ## 📊 Concepts
@@ -397,6 +439,48 @@ print("Covariance:", calc_covariance(X, Y))
 For `X = [2,4,6,8]` and `Y = [5,10,15,20]`:  
 - Covariance = **12.5** (positive → they increase together).  
 
+# Correlation
+
+**Correlation** is a statistical measure that describes the **strength and direction of a relationship between two variables**.  
+
+---
+
+## 📊 Definition
+Correlation is quantified by the **correlation coefficient** (often denoted as \(r\)):
+
+\[
+r = \frac{\text{Cov}(X,Y)}{\sigma_X \cdot \sigma_Y}
+\]
+
+Where:  
+- \(\text{Cov}(X,Y)\) = covariance between X and Y  
+- \(\sigma_X, \sigma_Y\) = standard deviations of X and Y  
+
+---
+
+## 🧠 Intuition
+- **Positive correlation (\(r > 0\))** → As one variable increases, the other tends to increase.  
+  Example: Height and weight.  
+- **Negative correlation (\(r < 0\))** → As one variable increases, the other tends to decrease.  
+  Example: Hours spent partying vs exam scores.  
+- **Zero correlation (\(r \approx 0\))** → No linear relationship.  
+  Example: Shoe size and salary.  
+
+---
+
+## 🎯 Key Properties
+- \(r\) ranges between **-1 and +1**.  
+  - \(r = +1\): Perfect positive linear relationship.  
+  - \(r = -1\): Perfect negative linear relationship.  
+  - \(r = 0\): No linear relationship.  
+- Correlation only measures **linear relationships**. Nonlinear patterns may exist even if \(r = 0\).  
+
+---
+
+## 🔑 Difference from Covariance
+- **Covariance**: Tells you the direction of the relationship (positive/negative), but its magnitude depends on the units of measurement.  
+- **Correlation**: Standardizes covariance, giving a unit‑free measure between -1 and +1, making it easier to interpret.  
+
 ---
 # Conditional probability 
 
@@ -487,6 +571,41 @@ Bayes’ Theorem lets you **update your beliefs** when new evidence arrives.
 - **Prior:** What you believed before seeing evidence.  
 - **Likelihood:** How consistent the evidence is with your hypothesis.  
 - **Posterior:** Updated belief after considering the evidence.  
+
+---
+
+The word **posterior** in probability and statistics refers to the **updated probability of an event after considering new evidence**.  
+
+---
+
+## 📊 Formal Meaning
+In **Bayesian statistics**:
+
+\[
+P(A|B) \quad \text{is called the posterior probability}
+\]
+
+- **Prior** (\(P(A)\)) → your belief about event A before seeing evidence.  
+- **Likelihood** (\(P(B|A)\)) → how consistent the evidence B is if A were true.  
+- **Posterior** (\(P(A|B)\)) → your new belief about A after incorporating evidence B.  
+
+---
+
+## 🧠 Intuition
+Think of it as:  
+- **Prior:** “I think there’s a 1% chance someone has the disease.”  
+- **Evidence:** “The test result is positive.”  
+- **Posterior:** “Given the positive test, I now update my belief — the chance is 16%.”  
+
+So the **posterior** is the probability *after updating with evidence*.  
+
+---
+
+## 🎯 Everyday Analogy
+Imagine you’re a detective:  
+- **Prior belief:** You think suspect A is unlikely to be guilty.  
+- **Evidence:** Fingerprints found at the crime scene.  
+- **Posterior belief:** After considering the fingerprints, your belief in suspect A’s guilt increases.  
 
 ---
 
@@ -789,7 +908,7 @@ If you take 100‑day samples and compute their average visits, those averages w
 
 Here’s a visual way to understand the **Central Limit Theorem (CLT)**:
 
-![alt text](CLT.png)
+![alt text](clt.png)
 
 Imagine you start with a population that is **not normal** — maybe it’s skewed, like income distribution or daily website visits.  
 
@@ -807,3 +926,506 @@ So the CLT shows that **averages of samples tend toward a normal distribution**,
 - It’s the backbone of inferential statistics — turning messy real‑world data into something predictable.
 
 ---
+
+# Hypothesis and Hypothesis Testing
+
+A **hypothesis** is essentially an **educated assumption or statement** about a population or process that you want to test using data. It’s the starting point of statistical inference.  
+
+---
+
+## 📊 Formal Meaning
+In statistics, a hypothesis is a claim about a population parameter (like mean, proportion, variance).  
+We usually set up two competing hypotheses:
+
+- **Null hypothesis (\(H_0\))** → the default assumption, e.g., “There is no effect” or “The mean is equal to 50.”  
+- **Alternative hypothesis (\(H_1\))** → the competing claim, e.g., “There is an effect” or “The mean is not equal to 50.”  
+
+---
+
+## 🧠 Intuition
+Think of a hypothesis as a **statement you want to check against evidence**:
+- In science: “This drug reduces blood pressure.”  
+- In business: “Customers prefer option A over option B.”  
+- In machine learning: “Feature X improves prediction accuracy.”  
+
+You then collect data and use statistical tests to decide whether the evidence supports or rejects the hypothesis.
+
+---
+
+## 🎯 Example
+Suppose a company claims their light bulbs last **1000 hours on average**.  
+- \(H_0\): Mean lifespan = 1000 hours (company’s claim).  
+- \(H_1\): Mean lifespan ≠ 1000 hours (challenging the claim).  
+
+You test a sample of bulbs, calculate statistics, and decide whether the data supports rejecting \(H_0\).
+
+---
+
+## 🔑 Key Takeaway
+- A **hypothesis** is a testable statement about reality.  
+- Statistics provides tools (like p‑values, confidence intervals, and test statistics) to evaluate whether data supports or contradicts it.  
+
+---
+
+| Aspect | **Null Hypothesis (**$H_0$**)** | **Alternative Hypothesis (**$H_1$**)** |
+| --- | --- | --- |
+| Meaning | Default assumption; “no effect” or “no difference” | Competing claim; “there is an effect” or “there is a difference” |
+| Purpose | Provides a baseline to test against | Represents what you want to prove or detect |
+| Example (Light bulb lifespan) | $H_0$: Mean lifespan = 1000 hours | $H_1$: Mean lifespan ≠ 1000 hours |
+| Example (New drug) | $H_0$: Drug has no effect on blood pressure | $H_1$: Drug lowers blood pressure |
+| Relationship | Always tested first; assumed true until evidence suggests otherwise | Accepted if evidence strongly contradicts $H_0$ |
+| Decision | “Fail to reject $H_0$” if data doesn’t show strong evidence | “Reject $H_0$” in favor of $H_1$ if data supports it |
+
+## Hypothesis Testing
+Yes — **hypothesis testing** is a formal statistical procedure used to decide whether data provides enough evidence to reject a hypothesis. It’s the practical application of the null and alternative hypotheses we just discussed.  
+
+---
+
+## 📊 What Hypothesis Testing Is
+Hypothesis testing is a **decision-making framework**:
+1. **Formulate hypotheses**  
+   - Null hypothesis (\(H_0\)): the default claim (no effect, no difference).  
+   - Alternative hypothesis (\(H_1\)): the challenger (there is an effect or difference).  
+
+2. **Collect data**  
+   - Gather a sample from the population.  
+
+3. **Compute a test statistic**  
+   - A number that measures how far the sample result is from what \(H_0\) predicts.  
+   - Examples: z‑score, t‑statistic, chi‑square statistic.  
+
+4. **Find the p‑value**  
+   - The probability of seeing data this extreme if \(H_0\) were true.  
+
+5. **Make a decision**  
+   - If p‑value < significance level (e.g., 0.05), reject \(H_0\).  
+   - Otherwise, fail to reject \(H_0\).  
+
+---
+
+## 🧠 Intuition
+It’s like a courtroom trial:  
+- \(H_0\) = “The defendant is innocent.”  
+- Evidence (data) is presented.  
+- If the evidence is strong enough, you reject innocence (reject \(H_0\)) in favor of guilt (\(H_1\)).  
+- If not, you keep the default assumption (fail to reject \(H_0\)).  
+
+---
+
+## 🎯 Example
+A company claims their bulbs last **1000 hours**.  
+- \(H_0\): Mean lifespan = 1000 hours.  
+- \(H_1\): Mean lifespan ≠ 1000 hours.  
+You test 50 bulbs, compute the sample mean and standard deviation, run a t‑test, and check the p‑value.  
+- If p < 0.05 → reject \(H_0\) (the claim is false).  
+- If p ≥ 0.05 → fail to reject \(H_0\) (no strong evidence against the claim).  
+
+---
+
+# Null Hypothesis Vs Alternative Hypothesis 
+
+**Null Hypothesis (\(H_0\))** and **Alternative Hypothesis (\(H_1\))**, two pillars of hypothesis testing.  
+
+---
+
+## 🎯 1. **Null Hypothesis (\(H_0\))**
+- **Definition:** The default assumption — there is *no effect*, *no difference*, or *no relationship*.  
+- **Purpose:** It represents the status quo or baseline claim you test against.  
+- **Example:**  
+  - A company claims their bulbs last 1000 hours.  
+    \[
+    H_0: \mu = 1000
+    \]
+  - Meaning: The average lifespan is 1000 hours (no change).  
+
+---
+
+## ⚡ 2. **Alternative Hypothesis (\(H_1\) or \(H_a\))**
+- **Definition:** The competing claim — there *is* an effect, difference, or relationship.  
+- **Purpose:** It’s what you want to prove or find evidence for.  
+- **Example:**  
+  - You suspect the bulbs last less than 1000 hours.  
+    \[
+    H_1: \mu < 1000
+    \]
+  - Meaning: The average lifespan is less than 1000 hours.  
+
+---
+
+## 🧠 Types of Alternative Hypotheses
+| Type | Symbolic Form | Example | Meaning |
+|------|----------------|----------|----------|
+| **Two-tailed** | \(H_1: \mu \neq \mu_0\) | \(H_1: \mu \neq 1000\) | Tests for any difference (higher or lower). |
+| **Left-tailed** | \(H_1: \mu < \mu_0\) | \(H_1: \mu < 1000\) | Tests if mean is smaller. |
+| **Right-tailed** | \(H_1: \mu > \mu_0\) | \(H_1: \mu > 1000\) | Tests if mean is larger. |
+
+---
+
+## 🧩 Decision Logic
+1. Assume \(H_0\) is true.  
+2. Collect data and compute a test statistic.  
+3. If evidence (p‑value) is strong enough → **Reject \(H_0\)** in favor of \(H_1\).  
+4. If not → **Fail to reject \(H_0\)** (no strong evidence against it).  
+
+---
+
+## 🔑 Key Takeaway
+- \(H_0\): “Nothing unusual is happening.”  
+- \(H_1\): “Something has changed.”  
+- Hypothesis testing is about deciding which statement the data supports.  
+
+---
+
+# Likelihood
+
+**Likelihood** in probability and statistics refers to how **probable the observed evidence is, given a particular hypothesis or parameter value**.  
+
+---
+
+## 📊 Formal Meaning
+If you have data \(D\) and a hypothesis/parameter \(\theta\), the likelihood is:
+
+\[
+L(\theta | D) = P(D | \theta)
+\]
+
+- \(P(D|\theta)\) → the probability of observing the data \(D\) if the hypothesis \(\theta\) were true.  
+- Notice: likelihood is not the same as probability of the hypothesis itself — it’s the probability of the **data given the hypothesis**.
+
+---
+
+## 🧠 Intuition
+- **Probability:** “If the coin is fair, what’s the chance of getting 3 heads in 5 flips?”  
+- **Likelihood:** “Given I observed 3 heads in 5 flips, how likely is it that the coin is fair?”  
+
+So probability predicts outcomes, while likelihood evaluates hypotheses against observed outcomes.
+
+---
+
+## 🎯 Example
+Suppose you flip a coin 10 times and get 7 heads.  
+- Hypothesis 1: Coin is fair (\(\theta = 0.5\)).  
+- Hypothesis 2: Coin is biased (\(\theta = 0.7\)).  
+
+The likelihood compares:  
+\[
+L(0.5|Data) = P(7 \text{ heads} | \theta=0.5)
+\]  
+\[
+L(0.7|Data) = P(7 \text{ heads} | \theta=0.7)
+\]  
+
+Whichever hypothesis gives a higher likelihood is more consistent with the observed data.
+
+---
+
+## 🔑 Role in Bayes’ Theorem
+In Bayesian inference:  
+- **Prior** = belief before evidence.  
+- **Likelihood** = how well the evidence fits the hypothesis.  
+- **Posterior** = updated belief after combining prior and likelihood.  
+
+---
+
+# Probability Distribution
+
+A **Probability Distribution** is a mathematical function that describes how probabilities are assigned to different possible outcomes of a random variable. It tells you *how likely each outcome is*.
+
+---
+
+## 📊 Types of Probability Distributions
+
+### 1. **Discrete Probability Distribution**
+- Deals with variables that take **specific values** (like counts).
+- Examples:
+  - **Binomial distribution** → number of successes in repeated trials.
+  - **Poisson distribution** → number of events in a fixed time/space.
+- Represented by a **probability mass function (PMF)**.
+
+\[
+P(X = x) = f(x)
+\]
+
+---
+
+### 2. **Continuous Probability Distribution**
+- Deals with variables that can take **any value in a range**.
+- Examples:
+  - **Normal (Gaussian) distribution** → bell curve.
+  - **Exponential distribution** → time between events.
+- Represented by a **probability density function (PDF)**.
+
+\[
+P(a \leq X \leq b) = \int_a^b f(x) \, dx
+\]
+
+---
+
+## 🧠 Intuition
+Think of a probability distribution as a **map of uncertainty**:
+- For discrete variables → it’s like a bar chart of probabilities.  
+- For continuous variables → it’s like a smooth curve showing density.  
+
+---
+
+## 🎯 Real-Life Examples
+- Rolling a die → discrete uniform distribution (each face has probability \(1/6\)).  
+- Heights of people → approximately normal distribution.  
+- Number of customer arrivals per hour → Poisson distribution.  
+
+---
+
+| Distribution | Type | Formula / PMF/PDF | Typical Use Case |
+| --- | --- | --- | --- |
+| **Bernoulli** | Discrete | $P(X=1)=p,\\; P(X=0)=1-p$ | Single trial with success/failure (coin flip, yes/no outcome). |
+| **Binomial** | Discrete | $P(X=k)=\\binom{n}{k}p^k(1-p)^{n-k}$ | Number of successes in $n$ independent Bernoulli trials (e.g., 10 coin flips). |
+| **Poisson** | Discrete | $P(X=k)=\\frac{\\lambda^k e^{-\\lambda}}{k!}$ | Count of events in fixed time/space (e.g., arrivals per hour, emails per day). |
+| **Normal (Gaussian)** | Continuous | $f(x)=\\frac{1}{\\sigma\\sqrt{2\\pi}} e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}$ | Natural phenomena: heights, test scores, measurement errors. |
+| **Uniform** | Continuous | $f(x)=\\frac{1}{b-a},\\; a \\leq x \\leq b$ | Equal probability for all values in an interval (random number generator). |
+| **Exponential** | Continuous | $f(x)=\\lambda e^{-\\lambda x},\\; x \\geq 0$ | Time until next event (waiting times, reliability analysis). |
+
+
+![alt text](pdf.png)
+
+![alt text](pdf2.png)
+
+Here’s the visualization you asked for — it shows **both distribution types (Discrete vs Continuous)** along with **plotting examples** for each of the six key probability distributions.  
+
+🔹 **Top row (Discrete distributions):**  
+- **Bernoulli** → two bars (0 and 1 outcomes).  
+- **Binomial** → bar chart shaped like a small bell (success counts).  
+- **Poisson** → bars decreasing as event counts increase.  
+
+🔹 **Bottom row (Continuous distributions):**  
+- **Normal** → bell curve centered at mean.  
+- **Uniform** → flat rectangle (equal probability across interval).  
+- **Exponential** → curve starting high and decaying quickly.  
+
+## 🧠 Intuition
+- **Bernoulli** → one coin flip.  
+- **Binomial** → many coin flips.  
+- **Poisson** → how many arrivals happen in a fixed time.  
+- **Normal** → the bell curve, averages and natural variation.  
+- **Uniform** → everything equally likely.  
+- **Exponential** → waiting time until the next event.  
+
+---
+
+## 🎯 Quick Real-Life Examples
+- Bernoulli: Did the machine fail today? (Yes/No)  
+- Binomial: How many machines fail in a week?  
+- Poisson: How many calls arrive at a call center per hour?  
+- Normal: Distribution of exam scores in a class.  
+- Uniform: Randomly picking a number between 1 and 10.  
+- Exponential: Time until the next customer arrives.  
+
+---
+
+## 1. 🎲 **Bernoulli Distribution**
+- **Type:** Discrete  
+- **Formula (PMF):**  
+  \[
+  P(X=1)=p,\quad P(X=0)=1-p
+  \]  
+- **Meaning:** Models a single trial with two outcomes: success (1) or failure (0).  
+- **Example:** Tossing a coin once (success = heads).  
+
+---
+
+## 2. 🎯 **Binomial Distribution**
+- **Type:** Discrete  
+- **Formula (PMF):**  
+  \[
+  P(X=k)=\binom{n}{k}p^k(1-p)^{n-k}
+  \]  
+- **Meaning:** Number of successes in \(n\) independent Bernoulli trials.  
+- **Example:** Number of heads in 10 coin flips.  
+
+---
+
+## 3. 📞 **Poisson Distribution**
+- **Type:** Discrete  
+- **Formula (PMF):**  
+  \[
+  P(X=k)=\frac{\lambda^k e^{-\lambda}}{k!}
+  \]  
+- **Meaning:** Models the count of events in a fixed interval (time/space), when events occur independently at a constant average rate.  
+- **Example:** Number of customer calls per hour at a call center.  
+
+---
+
+## 4. 🔔 **Normal (Gaussian) Distribution**
+- **Type:** Continuous  
+- **Formula (PDF):**  
+  \[
+  f(x)=\frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+  \]  
+- **Meaning:** Bell‑shaped curve, symmetric around mean \(\mu\). Spread determined by \(\sigma\).  
+- **Example:** Human heights, exam scores, measurement errors.  
+
+---
+
+## 5. 📏 **Uniform Distribution**
+- **Type:** Continuous  
+- **Formula (PDF):**  
+  \[
+  f(x)=\frac{1}{b-a},\quad a \leq x \leq b
+  \]  
+- **Meaning:** Every value in the interval \([a,b]\) is equally likely.  
+- **Example:** Random number generator between 1 and 10.  
+
+---
+
+## 6. ⏳ **Exponential Distribution**
+- **Type:** Continuous  
+- **Formula (PDF):**  
+  \[
+  f(x)=\lambda e^{-\lambda x},\quad x \geq 0
+  \]  
+- **Meaning:** Models the time until the next event occurs, given events happen at a constant rate.  
+- **Example:** Waiting time until the next bus arrives.  
+
+---
+
+![alt text](pdf3.png)
+
+## 🔑 Big Picture
+- **Bernoulli** → one trial (yes/no).  
+- **Binomial** → many trials (count successes).  
+- **Poisson** → count events in time/space.  
+- **Normal** → bell curve, natural variation.  
+- **Uniform** → equal chance for all values.  
+- **Exponential** → waiting time until next event.  
+
+# PDF and PMF
+
+**PMF** and **PDF** are two fundamental ways to describe how probabilities are distributed, depending on whether the random variable is **discrete** or **continuous**.  
+
+---
+
+## 🎲 **PMF — Probability Mass Function**
+- **Used for:** **Discrete** random variables (those that take specific, countable values).  
+- **Definition:** 
+
+  \[
+  P(X = x) = f(x)
+  \]
+  It gives the probability that the random variable \(X\) takes the exact value \(x\).  
+- **Properties:** 
+
+  - \(0 \leq P(X=x) \leq 1\)  
+  - \(\sum_x P(X=x) = 1\)  
+- **Example:**  
+  For a fair die,  
+  \[
+  P(X=x) = \frac{1}{6}, \quad x = 1,2,3,4,5,6
+  \]
+
+  Each outcome has equal probability.  
+
+---
+
+## 📈 **PDF — Probability Density Function**
+- **Used for:** **Continuous** random variables (those that can take any value in a range).  
+- **Definition:**  
+  \[
+  f(x) = \frac{d}{dx}P(X \leq x)
+  \]
+  It describes the *density* of probability at each point, not the probability itself.  
+- **Properties:**  
+  - \(f(x) \geq 0\)  
+  - \(\int_{-\infty}^{\infty} f(x)\,dx = 1\)  
+- **Example:**  
+  For a normal distribution,  
+  \[
+  f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+  \]
+  The area under the curve between two points gives the probability that \(X\) lies in that interval.  
+
+---
+
+## 🧠 Key Difference
+
+| Feature | PMF | PDF |
+|----------|-----|-----|
+| Variable type | Discrete | Continuous |
+| Gives | Probability of exact value | Probability density (area gives probability) |
+| Sum/Integral | Sum of probabilities = 1 | Integral of density = 1 |
+| Example | Coin toss, dice roll | Height, weight, temperature |
+
+---
+
+👉 In short:  
+- **PMF** → “Probability at a point.”  
+- **PDF** → “Probability density across a range.”  
+
+![alt text](pdfpmf.png)
+
+# Hypothesis Testing
+
+### 🎯 What is Hypothesis Testing?
+Hypothesis testing is a statistical method used to make decisions about a population based on sample data.
+It helps us decide whether to accept or reject a claim (hypothesis) about the population.
+
+| Test | Used For | Key Formula / Concept | Typical Conditions |
+| --- | --- | --- | --- |
+| **Z‑Test** | Tests population mean when **population variance (σ²)** is known and sample size is large ($n > 30$). | $Z = \\frac{\\bar{X} - \\mu}{\\sigma / \\sqrt{n}}$ | Normal distribution, known σ. |
+| **T‑Test** | Tests population mean when **σ is unknown** and sample size is small ($n < 30$). | $t = \\frac{\\bar{X} - \\mu}{s / \\sqrt{n}}$ | Student’s t‑distribution, unknown σ. |
+| **P‑Value Test** | Not a separate test — it’s a **decision metric** used in all tests. | Compare p‑value with significance level (α). | If $p < α$, reject $H_0$. |
+| **Chi‑Square Test (χ²)** | Tests relationships between **categorical variables** or goodness‑of‑fit. | $χ² = \\sum \\frac{(O - E)^2}{E}$ | Used for frequencies and independence. |
+| **ANOVA (Analysis of Variance)** | Compares **means of 3 or more groups**. | Based on F‑statistic: $F = \\frac{\\text{Between‑group variance}}{\\text{Within‑group variance}}$ | Used when comparing multiple samples. |
+| **F‑Test** | Compares **variances** of two populations. | $F = \\frac{s_1^2}{s_2^2}$ | Used before ANOVA or variance equality tests. |
+
+![alt text](hypothesistesting.png)
+
+
+# **Parametric vs Non‑Parametric Tests**
+
+---
+
+## 📊 Parametric Tests
+- **Definition:** Tests that assume the data follows a specific distribution (usually **Normal distribution**) and rely on parameters like mean (\(\mu\)) and variance (\(\sigma^2\)).  
+- **Key Assumptions:**  
+  - Data is normally distributed.  
+  - Variances are equal (homoscedasticity).  
+  - Observations are independent.  
+- **Examples:**  
+  - **Z‑Test** → mean comparison (large sample, known σ).  
+  - **T‑Test** → mean comparison (small sample, unknown σ).  
+  - **ANOVA (F‑Test)** → comparing means across 3+ groups.  
+  - **Regression analysis** → testing relationships between variables.  
+- **Advantages:** More powerful if assumptions hold.  
+- **Limitations:** Misleading if assumptions are violated.  
+
+---
+
+## 📈 Non‑Parametric Tests
+- **Definition:** Tests that do **not assume a specific distribution**; they work on ranks, medians, or categorical data.  
+- **Key Features:**  
+  - Useful when data is skewed or not normal.  
+  - Often based on **ordinal data** or ranks.  
+- **Examples:**  
+  - **Chi‑Square Test** → independence or goodness‑of‑fit for categorical data.  
+  - **Mann‑Whitney U Test** → compare medians of two independent groups.  
+  - **Wilcoxon Signed‑Rank Test** → compare paired samples.  
+  - **Kruskal‑Wallis Test** → non‑parametric alternative to ANOVA.  
+- **Advantages:** Robust, fewer assumptions.  
+- **Limitations:** Less powerful than parametric tests if data is actually normal.  
+
+---
+
+## 🧩 Big Picture
+| Category | Assumptions | Examples | Data Type |
+|----------|-------------|----------|-----------|
+| **Parametric** | Normal distribution, equal variance | Z‑Test, T‑Test, ANOVA, F‑Test | Continuous (interval/ratio) |
+| **Non‑Parametric** | No distribution assumption | Chi‑Square, Mann‑Whitney, Wilcoxon, Kruskal‑Wallis | Ordinal, categorical, skewed continuous |
+
+---
+
+## 🔑 Takeaway
+- Use **parametric tests** when assumptions about normality and variance hold → more statistical power.  
+- Use **non‑parametric tests** when data is categorical, ordinal, or violates parametric assumptions → more robust.  
+
+---
+
+![alt text](hypothesistestin2.png)
