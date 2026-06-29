@@ -42,6 +42,11 @@
 18) Random Variable and Discrete Random Variable
 19) Central Limit Theoram
 20) Confidence Interval
+21) Sampling
+    - Random vs stratified Sampling
+    - Sampling Bias VS Selection Bias
+    - Under-sampling vs over-sampling.
+
 
 # **mean, median, and mode**
 
@@ -1699,3 +1704,184 @@ So the confidence interval is \(100 \pm 4.13 = (95.87, 104.13)\).
 ---
 
 ![alt text](MarginOfError.png)
+
+# What is Sampling ?
+Sampling is how we select a subset of data from a population to make inferences.
+
+---
+
+## 🎯 Why Sampling?
+- Studying the **entire population** is often impossible (too large, costly, or time‑consuming).  
+- Sampling provides a **representative subset** so we can estimate population parameters with confidence.  
+
+---
+
+## 📊 Types of Sampling Techniques
+
+### 1. **Probability Sampling** (every unit has a known chance of selection)
+- **Simple Random Sampling**  
+  - Each member has equal chance.  
+  - Example: Lottery draw.  
+- **Systematic Sampling**  
+  - Select every \(k^{th}\) element after a random start.  
+  - Example: Every 10th customer entering a store.  
+- **Stratified Sampling**  
+  - Divide population into strata (groups) and sample proportionally.  
+  - Example: Sampling students by grade level.  
+- **Cluster Sampling**  
+  - Divide population into clusters, randomly select clusters, then sample all or some units within them.  
+  - Example: Selecting schools, then surveying all students in chosen schools.  
+
+---
+
+### 2. **Non‑Probability Sampling** (selection not based on random chance)
+- **Convenience Sampling**  
+  - Choose easiest available subjects.  
+  - Example: Asking friends for survey responses.  
+- **Judgment/Purposive Sampling**  
+  - Researcher selects based on expertise.  
+  - Example: Choosing “key informants” in a study.  
+- **Quota Sampling**  
+  - Ensure sample meets certain quotas (e.g., 50% male, 50% female).  
+- **Snowball Sampling**  
+  - Existing subjects recruit future subjects.  
+  - Example: Studying hidden populations (drug users, rare disease patients).  
+
+---
+
+## 🧩 Big Picture
+| Category | Technique | Key Feature | Example |
+|----------|-----------|-------------|---------|
+| **Probability** | Simple Random | Equal chance | Lottery |
+| | Systematic | Every k-th element | Every 10th customer |
+| | Stratified | Divide into strata | Students by grade |
+| | Cluster | Random clusters | Schools → students |
+| **Non‑Probability** | Convenience | Easy access | Friends survey |
+| | Judgment | Expert choice | Key informants |
+| | Quota | Meet quotas | Gender balance |
+| | Snowball | Chain referrals | Rare disease study |
+
+---
+
+## 🔑 Takeaway
+- **Probability sampling** → more reliable, supports statistical inference.  
+- **Non‑probability sampling** → easier, but prone to bias.  
+
+# Random Vs Stratified
+---
+
+## 🎲 Simple Random Sampling
+- **Definition:** Every unit in the population has an equal chance of being selected.  
+- **Process:** Use random numbers, lottery method, or computer randomization.  
+- **Advantages:** Easy to understand, unbiased if truly random.  
+- **Limitations:** May not represent subgroups well if population is diverse.  
+- **Example:** Selecting 100 students randomly from a university of 10,000.  
+
+---
+
+## 📊 Stratified Sampling
+- **Definition:** Population is divided into **strata (subgroups)** based on characteristics (e.g., age, gender, income), then samples are drawn proportionally or equally from each stratum.  
+- **Process:**  
+  1. Identify strata.  
+  2. Decide sample size from each stratum.  
+  3. Randomly select within each stratum.  
+- **Advantages:** Ensures representation of all subgroups, increases precision.  
+- **Limitations:** Requires detailed population information to form strata.  
+- **Example:** Sampling 100 students but ensuring proportional representation from each department (Engineering, Arts, Science).  
+
+---
+
+## 🧩 Side‑by‑Side Comparison
+
+| Feature | Random Sampling | Stratified Sampling |
+|---------|-----------------|---------------------|
+| **Selection** | Entire population, equal chance | Divide into strata, then sample |
+| **Representation** | May miss subgroups | Ensures subgroup representation |
+| **Complexity** | Simple | More complex |
+| **Bias Risk** | Low if random | Low, but depends on correct stratification |
+| **Example** | Lottery draw | Sampling by department |
+
+---
+
+## 🔑 Takeaway
+- Use **Random Sampling** when population is homogeneous.  
+- Use **Stratified Sampling** when population is heterogeneous and you want subgroup representation.  
+
+# Sampling Bias Vs Selection Bias
+
+## 🎯 Sampling Bias
+- **Definition:** Occurs when the sample collected is **not representative of the population**.  
+- **Cause:** The method of sampling systematically favors certain outcomes.  
+- **Impact:** Leads to incorrect conclusions because the sample doesn’t reflect the true population.  
+- **Examples:**  
+  - Surveying only urban residents to estimate national income.  
+  - Collecting data only from morning shoppers in a mall (missing evening crowd).  
+
+---
+
+## 📊 Selection Bias
+- **Definition:** A broader concept — occurs when **individuals or groups are more likely to be included/excluded** from the study due to non‑random selection.  
+- **Cause:** The way participants are chosen (or self‑select) skews the results.  
+- **Impact:** Distorts the relationship between variables being studied.  
+- **Examples:**  
+  - Studying health outcomes only among people who visit hospitals (ignores those who don’t seek care).  
+  - Online polls where only internet users can respond.  
+
+---
+
+## 🧩 Key Difference
+| Aspect | Sampling Bias | Selection Bias |
+|--------|---------------|----------------|
+| **Scope** | Specific to how the sample is drawn | Broader — includes sampling bias but also self‑selection |
+| **Cause** | Faulty sampling method | Non‑random inclusion/exclusion of participants |
+| **Example** | Only surveying college students for national opinion | Only people with strong opinions respond to a survey |
+
+---
+
+## 🔑 Takeaway
+- **Sampling Bias** is a type of **Selection Bias**.  
+- Both reduce the validity of statistical inference.  
+- The cure: use **probability sampling methods** (random, stratified, cluster) and ensure proper representation.  
+
+---
+
+# Under Sampling Vs Over Sampling
+
+---
+
+## 🎯 Under‑Sampling
+- **Definition:** Reduce the size of the majority class (or dataset) to balance with the minority class.  
+- **Goal:** Prevent the majority class from dominating the model.  
+- **Advantages:** Faster training, less data to process.  
+- **Disadvantages:** Risk of losing valuable information.  
+- **Example:** In fraud detection, if you have 10,000 “non‑fraud” cases and 500 “fraud” cases, you might randomly select 500 “non‑fraud” cases to match the minority.
+
+---
+
+## 📊 Over‑Sampling
+- **Definition:** Increase the size of the minority class (or dataset) to balance with the majority class.  
+- **Goal:** Give the minority class more weight in training.  
+- **Advantages:** Retains all majority data, improves minority representation.  
+- **Disadvantages:** Risk of overfitting (especially if duplicating data).  
+- **Example:** In fraud detection, you might duplicate or synthetically generate “fraud” cases until they match the 10,000 “non‑fraud” cases.
+
+---
+
+## 🧩 Side‑by‑Side Comparison
+
+| Aspect | Under‑Sampling | Over‑Sampling |
+|--------|----------------|---------------|
+| **Method** | Reduce majority class | Increase minority class |
+| **Data Loss** | Yes, majority data discarded | No, but duplicates may be added |
+| **Risk** | Losing information | Overfitting |
+| **Use Case** | Large majority class | Very small minority class |
+| **Example** | Drop “non‑fraud” cases | Duplicate “fraud” cases |
+
+---
+
+## 🔑 Takeaway
+- **Under‑Sampling**: Cut down the majority class → faster but less information.  
+- **Over‑Sampling**: Boost the minority class → better balance but risk of overfitting.  
+- In practice, advanced methods like **SMOTE (Synthetic Minority Over‑sampling Technique)** are often used to generate synthetic minority samples instead of simple duplication.
+
+---
