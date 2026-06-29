@@ -39,6 +39,9 @@
         - Mann‑Whitney U Test → compare medians of two independent groups.
         - Wilcoxon Signed‑Rank Test → compare paired samples.
         - Kruskal‑Wallis Test → non‑parametric alternative to ANOVA.
+18) Random Variable and Discrete Random Variable
+19) Central Limit Theoram
+20) Confidence Interval
 
 # **mean, median, and mode**
 
@@ -1429,3 +1432,270 @@ It helps us decide whether to accept or reject a claim (hypothesis) about the po
 ---
 
 ![alt text](hypothesistestin2.png)
+
+# Random Variable VS Discrete Random Variable
+
+## 🎲 Random Variable
+- **Definition:** A random variable is a function that assigns numerical values to the outcomes of a random experiment.  
+- **Types:**  
+  1. **Discrete Random Variable** → takes countable values (like integers).  
+  2. **Continuous Random Variable** → takes values from an interval (uncountably infinite).  
+
+Think of it as a bridge between the **random experiment** (like tossing a die) and the **mathematical world** (numbers we can analyze).  
+
+---
+
+## 🔢 Discrete Random Variable
+- **Definition:** A random variable that can take only **finite or countably infinite values**.  
+- **Probability described by:** **PMF (Probability Mass Function)**.  
+- **Examples:**  
+  - Rolling a die → outcomes {1,2,3,4,5,6}.  
+  - Number of heads in 10 coin flips → values {0,1,2,…,10}.  
+  - Number of customer arrivals in an hour (Poisson).  
+
+### Formula (PMF):  
+\[
+P(X=x) = f(x), \quad \sum_x P(X=x) = 1
+\]  
+
+---
+
+## 📈 Continuous Random Variable
+- **Definition:** A random variable that can take **any value in a continuous range**.  
+- **Probability described by:** **PDF (Probability Density Function)**.  
+- **Examples:**  
+  - Height of students.  
+  - Time taken for a bus to arrive.  
+  - Temperature readings.  
+
+### Formula (PDF):  
+\[
+P(a \leq X \leq b) = \int_a^b f(x)\,dx
+\]  
+
+---
+
+## 🧩 Big Picture
+| Type | Values | Probability Function | Example |
+|------|--------|----------------------|---------|
+| **Discrete RV** | Countable (finite or infinite) | PMF | Dice roll, coin flips |
+| **Continuous RV** | Any value in interval | PDF | Height, time, weight |
+
+---
+
+👉 In short:  
+- **Random Variable** = numerical representation of experiment outcomes.  
+- **Discrete Random Variable** = countable outcomes (uses PMF).  
+- **Continuous Random Variable** = uncountable outcomes (uses PDF). 
+---
+
+## 🎲 Types of Random Variables
+Random variables are classified based on the kind of values they can take:
+
+1. **Discrete Random Variable**  
+   - Takes **countable values** (finite or infinite).  
+   - Probability described by **PMF (Probability Mass Function)**.  
+   - Examples: Dice roll, number of heads in coin flips, number of arrivals in an hour.  
+
+2. **Continuous Random Variable**  
+   - Takes **uncountably infinite values** within an interval.  
+   - Probability described by **PDF (Probability Density Function)**.  
+   - Examples: Height, weight, time, temperature.  
+
+---
+
+## 🔢 Types of Discrete Random Variables
+Within discrete random variables, we have several important distributions:
+
+1. **Bernoulli Random Variable**  
+   - Two outcomes: success (1) or failure (0).  
+   - Example: Coin toss.  
+
+2. **Binomial Random Variable**  
+   - Number of successes in \(n\) Bernoulli trials.  
+   - Example: Number of heads in 10 coin flips.  
+
+3. **Poisson Random Variable**  
+   - Counts number of events in a fixed interval (time/space).  
+   - Example: Number of calls arriving per hour.  
+
+4. **Discrete Uniform Random Variable**  
+   - All outcomes equally likely.  
+   - Example: Rolling a fair die (\(P(X=x)=1/6\)).  
+
+---
+
+## 🧩 Big Picture
+| Category | Random Variable Type | Distribution Examples |
+|----------|----------------------|-----------------------|
+| **Discrete** | Countable outcomes | Bernoulli, Binomial, Poisson, Discrete Uniform |
+| **Continuous** | Any value in interval | Normal, Exponential, Continuous Uniform |
+
+# Central Limit Theoram
+
+The **Central Limit Theorem (CLT)** is one of the most important results in statistics — it explains why the **Normal distribution** shows up everywhere.  
+
+---
+
+## 🎯 Statement of CLT
+The Central Limit Theorem says:  
+- If you take **many independent random samples** from any population (with finite mean and variance),  
+- And compute their **sample means**,  
+- Then as the sample size \(n\) grows large, the distribution of those sample means will **approximate a Normal distribution**, regardless of the population’s original distribution.  
+
+---
+
+## 🧩 Formal Expression
+Let \(X_1, X_2, \dots, X_n\) be i.i.d. random variables with mean \(\mu\) and variance \(\sigma^2\).  
+Define the sample mean:  
+\[
+\bar{X} = \frac{1}{n}\sum_{i=1}^n X_i
+\]  
+
+Then, as \(n \to \infty\):  
+\[
+\frac{\bar{X} - \mu}{\sigma / \sqrt{n}} \;\;\to\;\; N(0,1)
+\]  
+That is, the standardized sample mean converges to the **Standard Normal distribution**.  
+
+---
+
+## 📊 Why It Matters
+- **Foundation of hypothesis testing**: Z‑tests, t‑tests, confidence intervals rely on CLT.  
+- **Practical use**: Even if data is skewed (like income, waiting times), the distribution of averages tends to be Normal.  
+- **Real world**: Explains why measurement errors, exam scores, and sampling distributions often look bell‑shaped.  
+
+---
+
+## 🔑 Key Takeaway
+- CLT bridges **any distribution → Normal distribution of sample means** (when \(n\) is large).  
+- It’s the reason the Normal curve is so central in statistics.  
+
+---
+
+![alt text](clt2.png)
+
+
+# 🎯 What Is a Confidence Interval?
+A **Confidence Interval** gives a range of values that is likely to contain the **true population parameter** (like mean or proportion).  
+It expresses **uncertainty** in estimation — instead of saying “the mean is 50,” we say “the mean is between 48 and 52 with 95% confidence.”  
+
+---
+
+## 🧩 Formula for Confidence Interval of Mean
+
+### 1. **When population standard deviation (σ) is known (Z‑based CI):**
+\[
+\text{CI} = \bar{X} \pm Z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}
+\]
+
+### 2. **When σ is unknown (T‑based CI):**
+\[
+\text{CI} = \bar{X} \pm t_{\alpha/2,\,df} \cdot \frac{s}{\sqrt{n}}
+\]
+
+Where:  
+- \(\bar{X}\) = sample mean  
+- \(n\) = sample size  
+- \(\sigma\) or \(s\) = population or sample standard deviation  
+- \(Z_{\alpha/2}\) or \(t_{\alpha/2,df}\) = critical value from Z or t distribution  
+- \(\alpha\) = significance level (e.g., 0.05 for 95% confidence)  
+
+---
+
+## 📊 Example
+Suppose sample mean = 100, \(s = 10\), \(n = 25\), and confidence level = 95%.  
+\[
+t_{0.025,24} \approx 2.064
+\]
+\[
+\text{CI} = 100 \pm 2.064 \cdot \frac{10}{\sqrt{25}} = 100 \pm 4.13
+\]
+So the **95% CI** is **(95.87, 104.13)**.  
+
+Interpretation: We are 95% confident that the true population mean lies between 95.87 and 104.13.  
+
+---
+
+## 🔑 Key Insights
+- **Higher confidence level → wider interval.**  
+- **Larger sample size → narrower interval.**  
+- **CI depends on variability and sample size.**  
+
+---
+
+## 🧠 Connection to CLT
+The **Central Limit Theorem** ensures that the sampling distribution of the mean is approximately Normal, allowing us to use Z or t values to construct confidence intervals.  
+
+![alt text](confidenceInterval.png)
+
+# Margin Of Error
+
+**Margin of Error (MoE)** — it’s the companion concept to **Confidence Interval** and tells you how much your sample estimate might differ from the true population value.  
+
+---
+
+## 🎯 What Is Margin of Error?
+The **Margin of Error** quantifies the **maximum expected difference** between the sample statistic (like sample mean or proportion) and the true population parameter.  
+It defines the “plus‑minus” range around your estimate.  
+
+Example:  
+> A survey reports that 60% of people prefer product A, with a margin of error of ±3%.  
+> This means the true proportion likely lies between **57% and 63%**.
+
+---
+
+## 🧩 Formula
+
+### 1. **For Mean (Z‑based):**
+\[
+\text{MoE} = Z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}
+\]
+
+### 2. **For Mean (T‑based):**
+\[
+\text{MoE} = t_{\alpha/2,\,df} \cdot \frac{s}{\sqrt{n}}
+\]
+
+### 3. **For Proportion:**
+\[
+\text{MoE} = Z_{\alpha/2} \cdot \sqrt{\frac{p(1-p)}{n}}
+\]
+
+Where:  
+- \(Z_{\alpha/2}\) or \(t_{\alpha/2,df}\) = critical value for confidence level  
+- \(\sigma\) or \(s\) = standard deviation  
+- \(n\) = sample size  
+- \(p\) = sample proportion  
+
+---
+
+## 📊 Relationship to Confidence Interval
+\[
+\text{Confidence Interval} = \text{Sample Estimate} \pm \text{Margin of Error}
+\]
+
+So, the **Margin of Error** is the “half‑width” of the confidence interval.  
+
+---
+
+## 🔑 Key Insights
+- Larger sample size → smaller margin of error.  
+- Higher confidence level → larger margin of error.  
+- More variability → larger margin of error.  
+
+---
+
+## 🧠 Example
+If sample mean = 100, \(s = 10\), \(n = 25\), and confidence level = 95%:  
+\[
+t_{0.025,24} = 2.064
+\]
+\[
+\text{MoE} = 2.064 \cdot \frac{10}{\sqrt{25}} = 4.13
+\]
+So the confidence interval is \(100 \pm 4.13 = (95.87, 104.13)\).  
+
+---
+
+![alt text](MarginOfError.png)
